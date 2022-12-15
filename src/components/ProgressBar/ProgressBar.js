@@ -5,9 +5,6 @@ import styled from 'styled-components';
 import { COLORS } from '../../constants';
 import VisuallyHidden from '../VisuallyHidden';
 
-// box-shadow: inset 0px 2px 4px ${COLORS.transparentGray35};
-
-
 // The read-only `aria-valuenow` should be provided and updated
 
 // use `aria-labelledby` if a visible label is present or `aria-label` if a visible label is not present.
@@ -16,15 +13,16 @@ import VisuallyHidden from '../VisuallyHidden';
 
 const Wrapper = styled.div`
   width: 370px;
-  height: 24px; // 12px, 8px 
+  height: var(--height);
   background-color: ${COLORS.transparentGray15};
-  border-radius: 8px; // 4px 
+  border-radius: var(--border-radius);
   position: relative;
+  box-shadow: inset 0px 2px 4px ${COLORS.transparentGray35};
 `;
 
-const InnerWrapper = styled.div`
-  width: calc(100% - 8px); // 100%
-  height: 16px; // 100%
+const DefaultBar = styled.div`
+  width: 100%;
+  height: 100%;
   position: absolute;
   top: 0px;
   bottom: 0px;
@@ -35,18 +33,52 @@ const InnerWrapper = styled.div`
   overflow: hidden;
 `;
 
-const LoadingBar = styled.div`
+const LargeBar = styled(DefaultBar)`
+  width: calc(100% - 8px);
+  height: 16px;
+`;
+
+const LoadingProgress = styled.div`
   width: ${p => p.value + '%'};
   height: 100%;
   background-color: ${COLORS.primary};
 `;
 
+const SIZES = {
+  large: {
+    '--height': '24px',
+    '--border-radius': '8px',
+  },
+  medium: {
+    '--height': '12px',
+    '--border-radius': '4px',
+  }, 
+  small: {
+    '--height': '8px',
+    '--border-radius': '4px',
+  },
+};
+
 const ProgressBar = ({ value, size }) => {
+  const styles = SIZES[size];
+  let Component;
+
+  if (size === 'large') {
+    Component = LargeBar;
+  } else {
+    Component = DefaultBar;
+  }
+
   return (
-    <Wrapper role="progressbar" aria-label="loading" aria-valuenow={value}>
-      <InnerWrapper>
-        <LoadingBar value={value}></LoadingBar>
-      </InnerWrapper>
+    <Wrapper
+      role="progressbar"
+      aria-label="loading"
+      aria-valuenow={value}
+      style={styles}
+    >
+      <Component>
+        <LoadingProgress value={value}></LoadingProgress>
+      </Component>
     </Wrapper>
   );
 };
